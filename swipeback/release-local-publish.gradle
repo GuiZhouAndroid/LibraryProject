@@ -2,12 +2,12 @@ apply plugin: 'maven-publish'
 
 //仓库的用户名
 static def getRepositoryUsername() {
-    return "64c322dd18dc444f20ffb4c9"
+    return "admin"
 }
 
 //仓库的密码
 static def getRepositoryPassword() {
-    return "53]zpCwjDN-m"
+    return "ZSAndroid199821!"
 }
 
 if (project.hasProperty("android")) { // Android库
@@ -50,15 +50,14 @@ tasks.register('javadocJar', Jar) {
 afterEvaluate {
     publishing {
         publications {
-            //发布snapshot包
-            mySnapshotPlugin(MavenPublication) {
+            myReleasePlugin(MavenPublication) {
                 groupId 'work.zsdev' //对应sonatype平台新建中的Group Id
-                artifactId 'network' //项目唯一标识符，对应项目名称
-                version '1.0.0-SNAPSHOT' //发布的版本 SNAPSHOT
+                artifactId 'swipeback' //项目唯一标识符，对应项目名称
+                version '1.0.0' //发布的版本 SNAPSHOT
                 //artifact(javadocJar)//将javadoc文档工件打包进aar
                 artifact(sourcesJar)//将Java注释工件打包进aar
                 // 依赖 bundleDebugAar 任务，并上传其产出的aar
-                artifact(tasks.getByName("bundleDebugAar"))
+                artifact(tasks.getByName("bundleReleaseAar"))
                 // 依赖传递：pom文件中声明依赖，从而传递到使用方
 //                pom.withXml {
 //                    def dependenciesNode = asNode().appendNode('dependencies')
@@ -79,12 +78,12 @@ afterEvaluate {
     }
 }
 
-//配置上传阿里云效Maven仓库地址和密码
+//配置上传本地nexus的maven仓库地址和密码
 publishing {
     repositories {
-        //开发版
+        //发布版
         maven {
-            url 'https://packages.aliyun.com/maven/repository/2403080-snapshot-OqTT62/'
+            url 'http://127.0.0.1:8087/repository/as-releases/'
             credentials {
                 username = getRepositoryUsername()
                 password = getRepositoryPassword()

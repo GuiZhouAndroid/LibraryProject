@@ -2,11 +2,11 @@ plugins {
     id 'com.android.library'
 }
 
-//阿里云效远程Maven推送的配置文件
+//本地nexus的私服仓库的配置文件
 //发布版
-//apply from: "release-aliyun-publish.gradle"
+//apply from: "release-local-publish.gradle"
 //开发版
-apply from: "snapshot-aliyun-publish.gradle"
+apply from: "snapshot-local-publish.gradle"
 
 //config.gradle根目录变量全局
 def app = rootProject.ext.android

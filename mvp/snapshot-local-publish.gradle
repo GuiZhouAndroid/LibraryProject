@@ -2,12 +2,12 @@ apply plugin: 'maven-publish'
 
 //仓库的用户名
 static def getRepositoryUsername() {
-    return "64c322dd18dc444f20ffb4c9"
+    return "admin"
 }
 
 //仓库的密码
 static def getRepositoryPassword() {
-    return "53]zpCwjDN-m"
+    return "ZSAndroid199821!"
 }
 
 if (project.hasProperty("android")) { // Android库
@@ -79,12 +79,12 @@ afterEvaluate {
     }
 }
 
-//配置上传阿里云效Maven仓库地址和密码
+//配置上传本地nexus的maven仓库地址和密码
 publishing {
     repositories {
         //开发版
         maven {
-            url 'https://packages.aliyun.com/maven/repository/2403080-snapshot-OqTT62/'
+            url 'http://127.0.0.1:8087/repository/as-snapshots/'
             credentials {
                 username = getRepositoryUsername()
                 password = getRepositoryPassword()
