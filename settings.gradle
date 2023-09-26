@@ -1,0 +1,38 @@
+//插件管理:
+pluginManagement {
+    //pluginManagement脚本块中的repositories配置, 对应旧版buildscript中的repositories配置
+    //工程构建过程中使用的仓库和依赖
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+//依赖解析管理
+dependencyResolutionManagement {
+    //RepositoriesMode.PREFER_PROJECT: 解析依赖库时, 优先使用本地仓库, 本地仓库没有该依赖, 则使用远程仓库
+    //解析依赖库时, 强行使用远程仓库, 不管本地仓库有没有该依赖库
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    //dependencyResolutionManagement脚本块中的repositories配置, 对应旧版allprojects中的repositories配置 ;
+    //所有工程配置的依赖库
+    repositories {
+        google()
+        //maven中央仓库
+        mavenCentral()
+        jcenter()
+        //jitpack
+        maven { url "https://jitpack.io" }
+        //SonaType发布版和快照版的仓库Maven网址
+        maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
+        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+    }
+}
+//指定工程根目录，声明后会自动执行该构建脚本
+rootProject.name = "LibraryProject"
+//指定子项目，声明后会自动执行该构建脚本，例如module名
+include ':app'
+include ':mvp'
+include ':dialog'
+include ':network'
+include ':swipeback'
+include ':utils'

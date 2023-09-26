@@ -1,0 +1,54 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.LibraryProject" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.LibraryProject" parent="Base.Theme.LibraryProject" />
+
+    <!--登录输入框浮动标签-->
+    <style name="login_hintAppearance">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/tab_login_press</item>
+    </style>
+    <!--登录忘记密码 注册按钮 字体-->
+    <style name="login_text_color">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/color_login_text</item>
+    </style>
+
+    <style name="MaterialRatingBar24dp">
+        <item name="android:minHeight">14dp</item>
+        <item name="android:maxHeight">14dp</item>
+    </style>
+
+    <style name="MainDrawerTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorMainDrawerPrimary</item>
+        <item name="colorPrimaryDark">@color/colorMainDrawerPrimaryDark</item>
+        <item name="colorAccent">@color/colorMainDrawerAccent</item>
+    </style>
+
+    <style name="DialogCallActionStyle">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_alignParentBottom">true</item>
+        <item name="android:layout_gravity">bottom|end</item>
+        <item name="android:background">#fff</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">#03a4f9</item>
+        <item name="android:textSize">15sp</item>
+
+    </style>
+
+    <!-- 去掉dialog阴影背景   -->
+    <style name="DialogNoBg" parent="Theme.AppCompat.Light.Dialog">
+        <!-- 设置自定义布局的背景透明 -->
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:background">#00000000</item>
+        <!-- 设置window背景透明，也就是去边框 -->
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+</resources>

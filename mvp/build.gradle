@@ -1,0 +1,62 @@
+plugins {
+    id 'com.android.library'
+}
+
+//sonatype平台的maven中央库配置文件
+//发布版
+//apply from: "release-sonatype-publish.gradle"
+//开发版
+apply from: "snapshot-sonatype-publish.gradle"
+
+//config.gradle根目录变量全局
+def app = rootProject.ext.android
+def dpc = rootProject.ext.dependencies
+
+android {
+    namespace 'zsdev.work.mvp'
+    compileSdk app["compileSdk"]
+
+    defaultConfig {
+        minSdk app["minSdk"]
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+
+    //自定义对话框
+    implementation project(':dialog')
+    //滑动返回
+    implementation project(':swipeback')
+    //工具库
+    implementation project(':utils')
+
+    //androidx
+    implementation dpc["appcompat"]
+    compileOnly dpc["multidex"]
+
+    //material
+    implementation dpc["material"]
+
+    //AutoDispose：是一种RxJava工具，用于通过处置/取消将RxJava流的执行自动绑定到提供的作用域
+    implementation dpc["autodispose-android"]
+    implementation dpc["autodispose-androidx-lifecycle"]
+
+    //lombok
+    compileOnly dpc["lombok"]
+}

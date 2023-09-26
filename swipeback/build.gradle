@@ -1,0 +1,39 @@
+plugins {
+    id 'com.android.library'
+}
+
+//sonatype平台的maven中央库配置文件
+//发布版
+//apply from: "release-sonatype-publish.gradle"
+//开发版
+apply from: "snapshot-sonatype-publish.gradle"
+
+//config.gradle根目录变量全局
+def app = rootProject.ext.android
+def dpc = rootProject.ext.dependencies
+
+android {
+    namespace 'zsdev.work.swipeback'
+    compileSdk app["compileSdk"]
+
+    defaultConfig {
+        minSdk app["minSdk"]
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    //androidx
+    implementation dpc["appcompat"]
+}

@@ -1,0 +1,79 @@
+plugins {
+    id 'com.android.library'
+}
+
+//sonatype平台的maven中央库配置文件
+//发布版
+//apply from: "release-sonatype-publish.gradle"
+//开发版
+apply from: "snapshot-sonatype-publish.gradle"
+
+//config.gradle根目录变量全局
+def app = rootProject.ext.android
+def dpc = rootProject.ext.dependencies
+
+android {
+    namespace 'zsdev.work.network'
+    compileSdk app["compileSdk"]
+
+    defaultConfig {
+        minSdk app["minSdk"]
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+    //弹窗
+    implementation project(':dialog')
+
+    //androidx
+    implementation dpc["appcompat"]
+
+    //material
+    implementation dpc["material"]
+
+    //gson
+    implementation dpc["gson"]//手动指定覆盖为最新版Gson2.10.1
+
+    //OkHttp3
+    implementation dpc["okhttp"]
+    implementation dpc["okio"]
+    implementation dpc["logging-interceptor"]//日志拦截器
+
+    //Retrofit2
+    implementation dpc["adapter-rxjava3"]//retrofit2专用rxjava3适配器
+    implementation(dpc["retrofit"]) {
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+        exclude group: 'com.squareup.okio', module: 'okio'
+    }
+    implementation(dpc["converter-gson"]) {
+        //内部封装了Gson2.8.5 这里不使用封装默认的低版本2.8.5版本，手动指定覆盖为最新版2.10.1
+        exclude group: 'com.google.code.gson', module: 'gson'
+    }
+    implementation dpc["converter-scalars"]
+    implementation dpc["converter-jackson"]
+    implementation dpc["converter-simplexml"]
+    implementation dpc["converter-protobuf"]
+    implementation dpc["converter-jaxb"]
+    implementation dpc["converter-java8"]
+    implementation dpc["converter-guava"]
+    implementation dpc["converter-moshi"]
+    implementation dpc["converter-wire"]
+
+    // rxJava3
+    implementation dpc["rxjava"]
+    implementation dpc["rxandroid"]//Android项目使用rxjava3，通常会使用rxjava3的rxAndroid库,专注Android特性而设计
+
+}
