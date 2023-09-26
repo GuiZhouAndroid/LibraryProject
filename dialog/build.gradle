@@ -38,5 +38,4 @@ dependencies {
     implementation dpc["appcompat"]
     //自定义View
     implementation dpc["library"]
-//    implementation dpc["loadingviewlib"]
 }

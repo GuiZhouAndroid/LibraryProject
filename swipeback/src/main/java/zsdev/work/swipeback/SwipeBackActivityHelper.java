@@ -12,7 +12,7 @@ import android.view.View;
  * Author: 张松
  */
 public class SwipeBackActivityHelper {
-    private Activity mActivity;
+    private final Activity mActivity;
 
     private SwipeBackLayout mSwipeBackLayout;
 

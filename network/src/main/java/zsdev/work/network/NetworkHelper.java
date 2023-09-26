@@ -18,7 +18,7 @@ import retrofit.converter.guava.GuavaOptionalConverterFactory;
 import retrofit.converter.java8.Java8OptionalConverterFactory;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.jaxb.JaxbConverterFactory;
@@ -350,7 +350,7 @@ public class NetworkHelper {
                 Log.i("NetworkHelper", "getRetrofit: Current not using rxjava state!");
             } else {
                 //添加回调库
-                builder.addCallAdapterFactory(RxJava3CallAdapterFactory.create());
+                builder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
                 Log.i("NetworkHelper", "getRetrofit: Current yes using rxjava state!");
             }
 

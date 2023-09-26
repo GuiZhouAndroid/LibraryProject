@@ -4,8 +4,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.functions.Function;
+import io.reactivex.Flowable;
 import zsdev.work.network.exception.ExceptionHandle;
 
 /**

@@ -109,8 +109,8 @@ dependencies {
         exclude group: 'com.squareup.okio', module: 'okio'
     }
 
-    //rxjava3适配器
-    implementation dpc["adapter-rxjava3"]
+    //rxjava2适配器
+    implementation dpc["adapter-rxjava2"]
 
     //gson转换器最新版2.10.1
     implementation(dpc["converter-gson"]) {
@@ -121,12 +121,23 @@ dependencies {
     //moshi转换器
     implementation dpc["converter-moshi"]
 
-    //AutoDispose
-    implementation dpc["autodispose-android"]
-    implementation dpc["autodispose-androidx-lifecycle"]
+    //rxLifecycle2核心库，解决retrofit + rxjava 未取消订阅引发内存泄漏
+    implementation(dpc["rxlifecycle"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果你想绑定到Android特定的生命周期
+    implementation(dpc["rxlifecycle-android"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果您想要预先编写的Activities和Fragments，您可以将其子类化为provider
+    implementation(dpc["rxlifecycle-components"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
 
-
-    // rxJava3
+    // rxJava2
     implementation dpc["rxjava"]
     implementation dpc["rxandroid"]
 

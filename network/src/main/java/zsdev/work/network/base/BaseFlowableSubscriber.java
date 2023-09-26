@@ -5,8 +5,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.util.Log;
 
-import io.reactivex.rxjava3.subscribers.ResourceSubscriber;
-import zsdev.work.dialog.custom.DialogUserCustomView;
+
+import io.reactivex.subscribers.ResourceSubscriber;
+import zsdev.work.dialog.custom.DialogCustomView;
 import zsdev.work.network.INetworkHandler;
 import zsdev.work.network.exception.NetworkError;
 import zsdev.work.network.exception.ResponseThrowable;
@@ -25,7 +26,7 @@ public abstract class BaseFlowableSubscriber<T> extends ResourceSubscriber<T> im
     /**
      * Context上下文
      */
-    private Context context;
+    private final Context context;
 
     /**
      * 请求等待框
@@ -42,7 +43,7 @@ public abstract class BaseFlowableSubscriber<T> extends ResourceSubscriber<T> im
         Log.i("BaseFlowableSubscriber", "BaseFlowableNormalSubscriber():" + context.getClass().getSimpleName());
         this.context = context;
         if (dialog == null) {
-            dialog = DialogUserCustomView.setFirewoodLoadingDialog(activity);
+            dialog = DialogCustomView.setFirewoodLoadingDialog(activity);
         }
     }
 
@@ -57,7 +58,7 @@ public abstract class BaseFlowableSubscriber<T> extends ResourceSubscriber<T> im
         Log.i("BaseFlowableSubscriber", "BaseFlowableNormalSubscriber():" + context.getClass().getSimpleName());
         this.context = context;
         if (dialog == null) {
-            dialog = DialogUserCustomView.setModeLoadingDialogRendererId(activity, loadingRendererId);
+            dialog = DialogCustomView.setModeLoadingDialogRendererId(activity, loadingRendererId);
         }
     }
 

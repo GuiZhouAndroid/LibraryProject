@@ -2,7 +2,7 @@ package zsdev.work.network.rxjava.function;
 
 import androidx.annotation.NonNull;
 
-import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.functions.Function;
 import zsdev.work.network.base.BaseResponse;
 
 /**

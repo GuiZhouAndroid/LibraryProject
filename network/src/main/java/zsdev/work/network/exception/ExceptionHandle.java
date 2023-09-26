@@ -2,7 +2,7 @@ package zsdev.work.network.exception;
 
 import android.util.Log;
 
-import retrofit2.adapter.rxjava3.HttpException;
+import retrofit2.adapter.rxjava2.HttpException;
 
 
 /**

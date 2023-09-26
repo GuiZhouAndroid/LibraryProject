@@ -3,14 +3,15 @@ package zsdev.work.swipeback;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 /**
  * Created: by 2023-09-20 12:36
- * Description:
+ * Description: RxLifecycle2 是一个用于管理 RxJava 订阅的生命周期库，它帮助你在 Android 应用中处理订阅的生命周期。
+ * 而 AndroidX 是 Android 官方推出的支持库，提供了一组用于向后兼容 Android 平台的库。所以，RxLifecycle2 和 AndroidX 可以一起使用，来处理 RxJava 订阅的生命周期管理
  * Author: 张松
  */
-public class SwipeBackActivity extends AppCompatActivity implements SwipeBackActivityBase {
+public class SwipeBackActivity extends RxAppCompatActivity implements SwipeBackActivityBase {
     private SwipeBackActivityHelper mHelper;
 
     @Override

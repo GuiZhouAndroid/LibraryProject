@@ -2,7 +2,8 @@ package zsdev.work.network.base;
 
 import java.util.Map;
 
-import io.reactivex.rxjava3.core.Flowable;
+
+import io.reactivex.Flowable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;

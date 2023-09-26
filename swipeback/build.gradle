@@ -36,4 +36,27 @@ android {
 dependencies {
     //androidx
     implementation dpc["appcompat"]
+
+    //material
+    implementation dpc["material"]
+
+    //rxLifecycle2核心库，解决retrofit + rxjava 未取消订阅引发内存泄漏
+    implementation(dpc["rxlifecycle"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果你想绑定到Android特定的生命周期
+    implementation(dpc["rxlifecycle-android"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果您想要预先编写的Activities和Fragments，您可以将其子类化为provider
+    implementation(dpc["rxlifecycle-components"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+
+    // rxJava2
+    implementation dpc["rxjava"]
+    implementation dpc["rxandroid"]
 }

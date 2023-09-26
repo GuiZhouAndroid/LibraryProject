@@ -53,10 +53,34 @@ dependencies {
     //material
     implementation dpc["material"]
 
-    //AutoDispose：是一种RxJava工具，用于通过处置/取消将RxJava流的执行自动绑定到提供的作用域
-    implementation dpc["autodispose-android"]
-    implementation dpc["autodispose-androidx-lifecycle"]
-
     //lombok
     compileOnly dpc["lombok"]
+
+    //最新版Gson2.10.1
+    implementation dpc["gson"]
+
+    //OkHttp3
+    implementation dpc["okhttp"]
+    implementation dpc["okio"]
+    implementation dpc["logging-interceptor"]//日志拦截器
+
+    //rxLifecycle2核心库，解决retrofit + rxjava 未取消订阅引发内存泄漏
+    implementation(dpc["rxlifecycle"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果你想绑定到Android特定的生命周期
+    implementation(dpc["rxlifecycle-android"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果您想要预先编写的Activities和Fragments，您可以将其子类化为provider
+    implementation(dpc["rxlifecycle-components"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+
+    // rxJava2
+    implementation dpc["rxjava"]
+    implementation dpc["rxandroid"]
 }

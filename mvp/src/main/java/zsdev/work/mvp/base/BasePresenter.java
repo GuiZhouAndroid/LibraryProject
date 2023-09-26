@@ -1,14 +1,26 @@
 package zsdev.work.mvp.base;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
 
-import autodispose2.AutoDisposeConverter;
+import com.trello.rxlifecycle2.LifecycleTransformer;
+import com.trello.rxlifecycle2.android.ActivityEvent;
+import com.trello.rxlifecycle2.android.FragmentEvent;
+import com.trello.rxlifecycle2.components.RxActivity;
+import com.trello.rxlifecycle2.components.RxPreferenceFragment;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+import com.trello.rxlifecycle2.components.support.RxFragmentActivity;
+
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
+import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
 import lombok.Getter;
 import zsdev.work.mvp.IModel;
 import zsdev.work.mvp.IPresenter;
 import zsdev.work.mvp.IView;
-import zsdev.work.mvp.utils.RxLifecycleUtil;
 
 /**
  * Created: by 2023-09-20 12:50
@@ -49,60 +61,6 @@ public class BasePresenter<V extends IView, M extends IModel> implements IPresen
     }
 
     /**
-     * P持久LifecycleOwner引用
-     */
-    public LifecycleOwner lifecycleOwner;
-
-    /**
-     * P层绑定生命周期后，返回AutoDispose转换器，
-     * 使用时我们要借助RxJava的as/to方法进行手动绑定订阅，由转换器搭配RxJava绑定自动完成解绑订阅，
-     *
-     * @param <T> 泛型
-     * @return AutoDispose转换器
-     */
-    public <T> AutoDisposeConverter<T> bindLifecycle() {
-        if (null == lifecycleOwner)
-            throw new NullPointerException("lifecycleOwner == null");
-        return RxLifecycleUtil.bindLifecycle(lifecycleOwner);
-    }
-    /* ********************************* IPresenter接口中的方法 ****************************************/
-
-    /**
-     * BaseMvpActivity调用此方法将持有的LifecycleOwner引用，传递到P层进行生命周期绑定，同时addObserver()添加订阅
-     *
-     * @param lifecycleOwner 生命周期
-     */
-    @Override
-    public void setLifecycleOwner(LifecycleOwner lifecycleOwner) {
-        this.lifecycleOwner = lifecycleOwner;
-    }
-
-    @Override
-    public void onCreate(@NonNull LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onStart(@NonNull LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onResume(@NonNull LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onPause(@NonNull LifecycleOwner owner) {
-
-    }
-
-    @Override
-    public void onStop(@NonNull LifecycleOwner owner) {
-
-    }
-
-    /**
      * 因为使用AutoDispose处理类P与V的订阅泄漏问题，而P与M的引用关系并未处理
      * 所以生命周期销毁时将Model引用置为null
      *
@@ -114,5 +72,122 @@ public class BasePresenter<V extends IView, M extends IModel> implements IPresen
             nowModel.onDestroy();
             this.nowModel = null;
         }
+    }
+
+    /**
+     * compose简化线程,统一处理Observable线程调度和绑定生命周期
+     *
+     * @param <T> 指定的泛型类型
+     * @return Observable转换器
+     */
+    protected <T> ObservableTransformer<T, T> getBindLifecycleObservableTransformer() {
+        return new ObservableTransformer<T, T>() {
+            @NonNull
+            @Override
+            public Observable<T> apply(@NonNull Observable<T> eObservable) {
+                // 最终用于订阅的
+                LifecycleTransformer<T> bindUntilEvent = null;
+                // ---------------------------------进行绑定前判断是相应类型------------
+                if (nowView instanceof RxAppCompatActivity) {
+                    bindUntilEvent = ((RxAppCompatActivity) nowView).bindUntilEvent(ActivityEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent: RxAppCompatActivity");
+                }
+                if (nowView instanceof RxFragmentActivity) {
+                    bindUntilEvent = ((RxFragmentActivity) nowView).bindUntilEvent(ActivityEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent: RxFragmentActivity");
+                }
+                if (nowView instanceof RxActivity) {
+                    bindUntilEvent = ((RxActivity) nowView).bindUntilEvent(ActivityEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent: RxActivity");
+                }
+                if (nowView instanceof RxPreferenceFragment) {
+                    bindUntilEvent = ((RxPreferenceFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent: RxPreferenceFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.RxFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.RxFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent: com.trello.rxlifecycle2.components.RxFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.support.RxFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.support.RxFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent: com.trello.rxlifecycle2.components.support.RxFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.RxDialogFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.RxDialogFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent:com.trello.rxlifecycle2.components.RxDiaLogFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.support.RxDialogFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.support.RxDialogFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Observable bindUntilEvent:com.trello.rxlifecycle2.components.support.RxDiaLogFragment");
+                }
+                // ---------------------------------类型匹配成功调用compose()组装绑定------------
+
+                if (bindUntilEvent != null) {
+                    Log.i("BasePresenter", "getBindLifecycleObservableTransformer:开始绑定 ");
+                    //绑定
+                    return eObservable.compose(bindUntilEvent);
+                }
+                // ---------------------------------类型匹配失败调用直接返回------------
+                return eObservable;
+            }
+        };
+    }
+
+    /**
+     * compose简化线程,统一处理Flowable线程调度和绑定生命周期
+     *
+     * @param <T> 指定的泛型类型
+     * @return Flowable转换器
+     */
+    protected <T> FlowableTransformer<T, T> getBindLifecycleFlowableTransformer() {
+        return new FlowableTransformer<T, T>() {
+            @NonNull
+            @Override
+            public Flowable<T> apply(@NonNull Flowable<T> eFlowable) {
+                // 最终用于订阅的
+                LifecycleTransformer<T> bindUntilEvent = null;
+                // ---------------------------------进行绑定前判断是相应类型------------
+                if (nowView instanceof RxAppCompatActivity) {
+                    bindUntilEvent = ((RxAppCompatActivity) nowView).bindUntilEvent(ActivityEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent: RxAppCompatActivity");
+                }
+                if (nowView instanceof RxFragmentActivity) {
+                    bindUntilEvent = ((RxFragmentActivity) nowView).bindUntilEvent(ActivityEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent: RxFragmentActivity");
+                }
+                if (nowView instanceof RxActivity) {
+                    bindUntilEvent = ((RxActivity) nowView).bindUntilEvent(ActivityEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent: RxActivity");
+                }
+                if (nowView instanceof RxPreferenceFragment) {
+                    bindUntilEvent = ((RxPreferenceFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent: RxPreferenceFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.RxFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.RxFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent: com.trello.rxlifecycle2.components.RxFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.support.RxFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.support.RxFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent: com.trello.rxlifecycle2.components.support.RxFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.RxDialogFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.RxDialogFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent:com.trello.rxlifecycle2.components.RxDiaLogFragment");
+                }
+                if (nowView instanceof com.trello.rxlifecycle2.components.support.RxDialogFragment) {
+                    bindUntilEvent = ((com.trello.rxlifecycle2.components.support.RxDialogFragment) nowView).bindUntilEvent(FragmentEvent.DESTROY);
+                    Log.i("BasePresenter", "Flowable bindUntilEvent:com.trello.rxlifecycle2.components.support.RxDiaLogFragment");
+                }
+                // ---------------------------------类型匹配成功调用compose()组装绑定------------
+                if (bindUntilEvent != null) {
+                    Log.i("BasePresenter", "getBindLifecycleFlowableTransformer:开始绑定 ");
+                    //绑定
+                    return eFlowable.compose(bindUntilEvent);
+                }
+                // ---------------------------------类型匹配失败调用直接返回------------
+                return eFlowable;
+            }
+        };
     }
 }

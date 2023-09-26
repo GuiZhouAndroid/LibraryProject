@@ -53,7 +53,7 @@ dependencies {
     implementation dpc["logging-interceptor"]//日志拦截器
 
     //Retrofit2
-    implementation dpc["adapter-rxjava3"]//retrofit2专用rxjava3适配器
+    implementation dpc["adapter-rxjava2"]
     implementation(dpc["retrofit"]) {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
         exclude group: 'com.squareup.okio', module: 'okio'
@@ -72,8 +72,24 @@ dependencies {
     implementation dpc["converter-moshi"]
     implementation dpc["converter-wire"]
 
-    // rxJava3
+    //rxLifecycle2核心库，解决retrofit + rxjava 未取消订阅引发内存泄漏
+    implementation(dpc["rxlifecycle"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果你想绑定到Android特定的生命周期
+    implementation(dpc["rxlifecycle-android"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+    //如果您想要预先编写的Activities和Fragments，您可以将其子类化为provider
+    implementation(dpc["rxlifecycle-components"]) {
+        exclude group: 'io.reactivex.rxjava2', module: 'rxjava'
+        exclude group: 'io.reactivex.rxjava2', module: 'rxandroid'
+    }
+
+    // rxJava2
     implementation dpc["rxjava"]
-    implementation dpc["rxandroid"]//Android项目使用rxjava3，通常会使用rxjava3的rxAndroid库,专注Android特性而设计
+    implementation dpc["rxandroid"]
 
 }

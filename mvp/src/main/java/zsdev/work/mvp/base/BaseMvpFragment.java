@@ -5,14 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
-import androidx.lifecycle.Lifecycle;
 
 import zsdev.work.mvp.IPresenter;
 
@@ -74,24 +71,9 @@ public abstract class BaseMvpFragment<P extends IPresenter, VB extends ViewDataB
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         vb = DataBindingUtil.bind(view);
-        initLifecycleObserver(getLifecycle());//初始化生命周期
         initPrepareData();//初始化准备数据
         setListener(); //监听事件
         doViewBusiness(); //View业务
-    }
-
-    /**
-     * 初始化生命周期
-     * 订阅绑定：addObserver()
-     * 订阅解绑：将当前Lifecycle引用传递到P层，提供给P层绑定使用
-     *
-     * @param lifecycle 生命周期引用
-     */
-    @CallSuper //表示任何重写方法也应该调用此方法
-    @MainThread //表示只应在主线程上调用带注释的方法。如果带注释的元素是一个类，那么该类中的所有方法都应该在主线程上调用
-    protected void initLifecycleObserver(@NonNull Lifecycle lifecycle) {
-        getPresenter().setLifecycleOwner(this);
-        lifecycle.addObserver(getPresenter());
     }
 
     @Override

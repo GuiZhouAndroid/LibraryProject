@@ -2,10 +2,10 @@ package zsdev.work.network.rxjava.transformer;
 
 import androidx.annotation.NonNull;
 
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.FlowableTransformer;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableTransformer;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
+import io.reactivex.Observable;
+import io.reactivex.ObservableTransformer;
 import zsdev.work.network.base.BaseResponse;
 import zsdev.work.network.rxjava.function.FlowableErrorFunction;
 import zsdev.work.network.rxjava.function.ObservableErrorFunction;
@@ -14,8 +14,7 @@ import zsdev.work.network.rxjava.function.ResponseFunction;
 
 /**
  * Created: by 2023-09-11 16:13
- * Description: Observable和Flowable 的处理请求响应的数据 + 异常处理变换 + 线程调度切换的Scheduler
- * 【AutoDispose2绑定订阅生命周期处理内存泄漏：请借助RxJava3的to()传入BasePresenter中的bindLifecycle()】
+ * Description: Observable和Flowable 的处理请求响应的数据 + 异常处理变换 + Lifecycle绑定订阅生命周期 + 线程调度切换的Scheduler
  * Author: 张松
  */
 public class HandlerTransformer {
@@ -47,6 +46,27 @@ public class HandlerTransformer {
      * （1）描述同bindLifecycle()
      * （2）数据处理：同上
      *
+     * @param <T> 调用者传递到方法上游的对象数据
+     * @return Observable转换器
+     */
+    public static <T> ObservableTransformer<BaseResponse<T>, T> getObservableTransformerScheduler(ObservableTransformer<T, T> bindToLifecycle) {
+        return new ObservableTransformer<BaseResponse<T>, T>() {
+            @NonNull
+            @Override
+            public Observable<T> apply(@NonNull Observable<BaseResponse<T>> observable) {
+                return observable
+                        //数据成功与异常处理
+                        .map(new ResponseFunction<>()).onErrorResumeNext(new ObservableErrorFunction<>())
+                        //Observable线程调度
+                        .compose(SchedulerTransformer.getObservableSchedulerLifecycle(bindToLifecycle));
+            }
+        };
+    }
+
+    /**
+     * （1）描述同bindLifecycle()
+     * （2）数据处理：同上
+     *
      * @return Flowable转换器
      */
     public static <T> FlowableTransformer<BaseResponse<T>, T> getFlowableTransformerScheduler() {
@@ -61,6 +81,28 @@ public class HandlerTransformer {
                         .map(new ResponseFunction<>()).onErrorResumeNext(new FlowableErrorFunction<>())
                         //Flowable线程调度
                         .compose(SchedulerTransformer.getFlowableScheduler());
+            }
+        };
+    }
+
+    /**
+     * （1）描述同bindLifecycle()
+     * （2）数据处理：同上
+     *
+     * @return Flowable转换器
+     */
+    public static <T> FlowableTransformer<BaseResponse<T>, T> getFlowableTransformerScheduler(FlowableTransformer<T, T> bindToLifecycle) {
+        //参数1：BaseResponse<T>为上游值（从model层调用传递过来的Bean），参数2：T为下游值（本次RxJava流程未结束，需要传递下一个流程中处理数据）
+        return new FlowableTransformer<BaseResponse<T>, T>() {
+            @NonNull
+            @Override
+            public Flowable<T> apply(@NonNull Flowable<BaseResponse<T>> flowable) {
+                //引用Function，若此处网络错误，直接onError(Throwable t)
+                return flowable
+                        //数据成功与异常处理
+                        .map(new ResponseFunction<>()).onErrorResumeNext(new FlowableErrorFunction<>())
+                        //Flowable线程调度
+                        .compose(SchedulerTransformer.getFlowableSchedulerLifecycle(bindToLifecycle));
             }
         };
     }

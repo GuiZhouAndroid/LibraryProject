@@ -21,7 +21,7 @@ import zsdev.work.dialog.custom.loadingview.LVCircularSmile;
  * Description: AlertDialog绑定自定义等待框View
  * Author: 张松
  */
-public class DialogUserCustomView {
+public class DialogCustomView {
 
     /**
      * 水瓶

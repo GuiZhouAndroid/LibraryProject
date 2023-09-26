@@ -13,8 +13,6 @@ import androidx.lifecycle.LifecycleOwner;
  */
 public interface IPresenter extends DefaultLifecycleObserver {
 
-    void setLifecycleOwner(LifecycleOwner lifecycleOwner);
-
     @Override
     default void onCreate(@NonNull LifecycleOwner owner) {
         Log.i("IPresenter", "onCreate: ");

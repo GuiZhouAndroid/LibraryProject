@@ -12,8 +12,8 @@ def multidex_version = '2.0.1'
 def material_version = '1.9.0'
 //hilt
 def hilt_version = '2.48'
-//AutoDispose2
-def autoDispose2_version = '2.1.0'
+//rxLifecycle2
+def rxLifecycle2_version = '2.2.2'
 //lombok
 def lombok_version = '1.18.28'
 //gson
@@ -24,9 +24,9 @@ def okhttp3_okio_version = '3.2.0'
 def okhttp3_logging_interceptor_version = '4.11.0'
 //retrofit2
 def retrofit2_version = '2.9.0'
-//rxJava3
-def rxjava_version = '3.1.7'
-def rxAndroid_version = '3.0.2'
+//rxJava2
+def rxjava_version = '2.2.21'
+def rxAndroid_version = '2.1.1'
 //阿里云OSS
 def ali_oss_version = '2.9.15'
 
@@ -42,69 +42,70 @@ project.ext {
     dependencies = [
             //jetified-protobuf-java MethodHandle.invoke and MethodHandle.invokeExact are only supported starting with Android O (--min-api 26)
             // 解决方案：minSdk 26及以上 或添加 最新protobuf-java库
-            "protobuf-java"                 : "com.google.protobuf:protobuf-java:${protobuf_java_version}",
+            "protobuf-java"         : "com.google.protobuf:protobuf-java:${protobuf_java_version}",
 
             // Androidx
-            "appcompat"                     : "androidx.appcompat:appcompat:${appcompat_version}",
-            "constraintlayout"              : "androidx.constraintlayout:constraintlayout:${constraintlayout_version}",
-            "multidex"                      : "androidx.multidex:multidex:${multidex_version}",
+            "appcompat"             : "androidx.appcompat:appcompat:${appcompat_version}",
+            "constraintlayout"      : "androidx.constraintlayout:constraintlayout:${constraintlayout_version}",
+            "multidex"              : "androidx.multidex:multidex:${multidex_version}",
 
             // material
-            "material"                      : "com.google.android.material:material:${material_version}",
+            "material"              : "com.google.android.material:material:${material_version}",
 
             // junit
-            "junit"                         : "junit:junit:4.13.2",
+            "junit"                 : "junit:junit:4.13.2",
 
             // hilt库与其注解处理器
-            "hilt-android"                  : "com.google.dagger:hilt-android:${hilt_version}",
-            "hilt-compiler"                 : "com.google.dagger:hilt-compiler:${hilt_version}",
+            "hilt-android"          : "com.google.dagger:hilt-android:${hilt_version}",
+            "hilt-compiler"         : "com.google.dagger:hilt-compiler:${hilt_version}",
 
             // kotlin
-            "kotlin-bom"                    : "org.jetbrains.kotlin:kotlin-bom:${kotlin_bom_version}",//添加此项避免开启dataBinding时出现kotlin-stdlib-jdk版本冲突
+            "kotlin-bom"            : "org.jetbrains.kotlin:kotlin-bom:${kotlin_bom_version}",//添加此项避免开启dataBinding时出现kotlin-stdlib-jdk版本冲突
 
-            // AutoDispose2：是一种RxJava工具，用于通过处置/取消将RxJava流的执行自动绑定到提供的作用域
-            "autodispose-android"           : "com.uber.autodispose2:autodispose-android:${autoDispose2_version}",
-            "autodispose-androidx-lifecycle": "com.uber.autodispose2:autodispose-androidx-lifecycle:${autoDispose2_version}",
+            // rxLifecycle2
+            "rxlifecycle"           : "com.trello.rxlifecycle2:rxlifecycle:${rxLifecycle2_version}",
+            "rxlifecycle-android"   : "com.trello.rxlifecycle2:rxlifecycle-android:${rxLifecycle2_version}",
+            "rxlifecycle-components": "com.trello.rxlifecycle2:rxlifecycle-components:${rxLifecycle2_version}",
 
             //lombok
-            "lombok"                        : "org.projectlombok:lombok:${lombok_version}",
+            "lombok"                : "org.projectlombok:lombok:${lombok_version}",
 
             //gson
-            "gson"                          : "com.google.code.gson:gson:${gson_version}",
+            "gson"                  : "com.google.code.gson:gson:${gson_version}",
 
             //okhttp3
-            "okhttp"                        : "com.squareup.okhttp3:okhttp:${okhttp3_version}",
-            "okio"                          : "com.squareup.okio:okio:${okhttp3_okio_version}",
-            "logging-interceptor"           : "com.squareup.okhttp3:logging-interceptor:${okhttp3_logging_interceptor_version}", //OkHttp3日志拦截器
+            "okhttp"                : "com.squareup.okhttp3:okhttp:${okhttp3_version}",
+            "okio"                  : "com.squareup.okio:okio:${okhttp3_okio_version}",
+            "logging-interceptor"   : "com.squareup.okhttp3:logging-interceptor:${okhttp3_logging_interceptor_version}", //OkHttp3日志拦截器
 
             //retrofit2
-            "adapter-rxjava3"               : "com.squareup.retrofit2:adapter-rxjava3:${retrofit2_version}",//retrofit2专用rxjava3适配器
-            "retrofit"                      : "com.squareup.retrofit2:retrofit:${retrofit2_version}",
-            "converter-gson"                : "com.squareup.retrofit2:converter-gson:${retrofit2_version}",
-            "converter-scalars"             : "com.squareup.retrofit2:converter-scalars:${retrofit2_version}",
-            "converter-jackson"             : "com.squareup.retrofit2:converter-jackson:${retrofit2_version}",
-            "converter-simplexml"           : "com.squareup.retrofit2:converter-simplexml:${retrofit2_version}",
-            "converter-protobuf"            : "com.squareup.retrofit2:converter-protobuf:${retrofit2_version}",
-            "converter-jaxb"                : "com.squareup.retrofit2:converter-jaxb:${retrofit2_version}",
-            "converter-java8"               : "com.squareup.retrofit2:converter-java8:${retrofit2_version}",
-            "converter-guava"               : "com.squareup.retrofit2:converter-guava:${retrofit2_version}",
-            "converter-moshi"               : "com.squareup.retrofit2:converter-moshi:${retrofit2_version}",
-            "converter-wire"                : "com.squareup.retrofit2:converter-wire:${retrofit2_version}",
+            "adapter-rxjava2"       : "com.squareup.retrofit2:adapter-rxjava2:${retrofit2_version}",//retrofit2专用rxjava2适配器
+            "retrofit"              : "com.squareup.retrofit2:retrofit:${retrofit2_version}",
+            "converter-gson"        : "com.squareup.retrofit2:converter-gson:${retrofit2_version}",
+            "converter-scalars"     : "com.squareup.retrofit2:converter-scalars:${retrofit2_version}",
+            "converter-jackson"     : "com.squareup.retrofit2:converter-jackson:${retrofit2_version}",
+            "converter-simplexml"   : "com.squareup.retrofit2:converter-simplexml:${retrofit2_version}",
+            "converter-protobuf"    : "com.squareup.retrofit2:converter-protobuf:${retrofit2_version}",
+            "converter-jaxb"        : "com.squareup.retrofit2:converter-jaxb:${retrofit2_version}",
+            "converter-java8"       : "com.squareup.retrofit2:converter-java8:${retrofit2_version}",
+            "converter-guava"       : "com.squareup.retrofit2:converter-guava:${retrofit2_version}",
+            "converter-moshi"       : "com.squareup.retrofit2:converter-moshi:${retrofit2_version}",
+            "converter-wire"        : "com.squareup.retrofit2:converter-wire:${retrofit2_version}",
 
-            // rxJava3
-            "rxjava"                        : "io.reactivex.rxjava3:rxjava:${rxjava_version}",
-            "rxandroid"                     : "io.reactivex.rxjava3:rxandroid:${rxAndroid_version}",//Android项目使用rxjava3，通常会使用rxjava3的rxAndroid库,专注Android特性而设计
+            // rxJava2
+            "rxjava"                : "io.reactivex.rxjava2:rxjava:${rxjava_version}",
+            "rxandroid"             : "io.reactivex.rxjava2:rxandroid:${rxAndroid_version}",//Android项目使用rxjava3，通常会使用rxjava3的rxAndroid库,专注Android特性而设计
 
             //log
-            "logger"                        : "com.orhanobut:logger:2.2.0",
+            "logger"                : "com.orhanobut:logger:2.2.0",
 
             //阿里云OSS
-            "oss-android-sdk"               : "com.aliyun.dpa:oss-android-sdk:${ali_oss_version}",
+            "oss-android-sdk"       : "com.aliyun.dpa:oss-android-sdk:${ali_oss_version}",
 
             //自定义view
-            "library"                       : "cc.cloudist.acplibrary:library:1.2.1", //https://github.com/Cloudist/ACProgressLite
+            "library"               : "cc.cloudist.acplibrary:library:1.2.1", //https://github.com/Cloudist/ACProgressLite
 
             //lottie
-            "lottie"                        : "'com.airbnb.android:lottie:2.8.0'"
+            "lottie"                : "'com.airbnb.android:lottie:2.8.0'"
     ]
 }
