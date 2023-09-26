@@ -1,5 +1,8 @@
 package zsdev.work.libraryproject.presenter;
 
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.subscribers.DisposableSubscriber;
 import zsdev.work.libraryproject.App;
 import zsdev.work.libraryproject.bean.My;
 import zsdev.work.libraryproject.contract.MainContract;
@@ -9,6 +12,7 @@ import zsdev.work.mvp.base.BasePresenter;
 import zsdev.work.network.base.BaseFlowableSubscriber;
 import zsdev.work.network.exception.ResponseThrowable;
 import zsdev.work.network.rxjava.transformer.HandlerTransformer;
+import zsdev.work.network.rxjava.transformer.SchedulerTransformer;
 
 /**
  * Created: by 2023-09-26 18:31
@@ -38,7 +42,10 @@ public class MainPresenter extends BasePresenter<MainContract.View, MainContract
     @Override
     public void login2() {
         //循环发送数字 测试内存泄漏
-//        mainModel.login2().interval(1, TimeUnit.SECONDS).compose(SchedulerTransformer.getFlowableScheduler()).to(bindLifecycle()).subscribe(new DisposableSubscriber<Long>() {
+//        mainModel.login2().interval(1, TimeUnit.SECONDS)
+//                .compose(SchedulerTransformer.getFlowableScheduler())
+//                .to(bindLifecycle())//加上这行代码，视图关闭调用onDestroy()定时结束，反之继续打印aLong值
+//                .subscribe(new DisposableSubscriber<Long>() {
 //            @Override
 //            public void onNext(Long aLong) {
 //                System.out.println("aLong = " + aLong);
@@ -54,7 +61,7 @@ public class MainPresenter extends BasePresenter<MainContract.View, MainContract
 //
 //            }
 //        });
-
+//
         mainModel.login2()
                 .compose(HandlerTransformer.getFlowableTransformerScheduler())
                 .to(bindLifecycle()).subscribe(new BaseFlowableSubscriber<My>(App.getContext(), BaseActivity.getNowActivity(),9) {
