@@ -1,5 +1,4 @@
 apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
 /* 当您想在该项目中使用 Gradle 8 时，必须更改构建文件以使其与 Gradle 8 兼容。
 *AbstractArchiveTask 任务类型已弃用的appendix、archiveName、archivePath、baseName、
@@ -8,13 +7,15 @@ apply plugin: 'signing'
 * archiveClassifier、destinationDirectory、archiveExtension 和 archiveVersion 属性。
 * 兼容Gradle之前的 只需将 gradle 版本降级到 7.6 即可解决该问题
 */
+
 //仓库的用户名
 static def getRepositoryUsername() {
-    return "ZSAndroid"
+    return "64c322dd18dc444f20ffb4c9"
 }
+
 //仓库的密码
 static def getRepositoryPassword() {
-    return "gUIzHOUaNDROID199821!"
+    return "53]zpCwjDN-m"
 }
 
 if (project.hasProperty("android")) { // Android库
@@ -53,12 +54,6 @@ tasks.register('javadocJar', Jar) {
     from javadoc.destinationDir
 }
 
-//签名
-signing {
-    //required { gradle.taskGraph.hasTask("afterEvaluate") }
-    sign configurations.archives
-}
-
 //配置上传包的参数
 afterEvaluate {
     publishing {
@@ -87,53 +82,17 @@ afterEvaluate {
 //                        }
 //                    }
 //                }
-                //项目配置
-                pom {
-                    packaging 'aar' //安卓Library库：aar 、后端Java：jar
-                    name = 'dialog' // 发布库的简单名称
-                    description = 'Android自定义对话框' // 发布库的描述
-                    url = 'https://github.com/GuiZhouAndroid/LibraryProject' //Github项目首页
-                    //Git项目信息
-                    scm {
-                        //git项目连接地址
-                        connection = 'https://github.com/GuiZhouAndroid/LibraryProject.git'
-                        //git项目开发者连接地址
-                        developerConnection = 'https://github.com/GuiZhouAndroid/LibraryProject.git'
-                        //Github项目首页
-                        url = 'https://github.com/GuiZhouAndroid/LibraryProject.git'
-                    }
-                    // 开放许可证书
-                    licenses {
-                        license {
-                            //许可名称
-                            name = 'The Apache License, Version 2.0'
-                            //许可URL
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    //开发者SonaType账号的信息
-                    developers {
-                        developer {
-                            //全名
-                            id = 'ZhangSong'
-                            //用户名
-                            name = 'ZSAndroid'
-                            //邮箱
-                            email = '2393579405@qq.com'
-                        }
-                    }
-                }
             }
         }
     }
 }
 
-//配置上传SonaType仓库Maven地址和密码
+//配置上传阿里云效Maven仓库地址和密码
 publishing {
     repositories {
         //开发版
         maven {
-            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            url 'https://packages.aliyun.com/maven/repository/2403080-snapshot-OqTT62/'
             credentials {
                 username = getRepositoryUsername()
                 password = getRepositoryPassword()

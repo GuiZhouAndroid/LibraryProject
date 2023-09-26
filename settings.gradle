@@ -22,9 +22,22 @@ dependencyResolutionManagement {
         jcenter()
         //jitpack
         maven { url "https://jitpack.io" }
-        //SonaType发布版和快照版的仓库Maven网址
-        maven { url 'https://s01.oss.sonatype.org/content/repositories/releases/' }
-        maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
+        //阿里云效的Maven仓库地址
+        maven { url 'https://maven.aliyun.com/repository/public'}
+        maven {
+            url 'https://packages.aliyun.com/maven/repository/2403080-release-ocjbQ3/'
+            credentials {
+                username '64c322dd18dc444f20ffb4c9'
+                password '53]zpCwjDN-m'
+            }
+        }
+        maven {
+            url 'https://packages.aliyun.com/maven/repository/2403080-snapshot-OqTT62/'
+            credentials {
+                username '64c322dd18dc444f20ffb4c9'
+                password '53]zpCwjDN-m'
+            }
+        }
     }
 }
 //指定工程根目录，声明后会自动执行该构建脚本

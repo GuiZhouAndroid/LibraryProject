@@ -2,11 +2,11 @@ plugins {
     id 'com.android.library'
 }
 
-//sonatype平台的maven中央库配置文件
+//阿里云效远程Maven推送的配置文件
 //发布版
-//apply from: "release-sonatype-publish.gradle"
+//apply from: "release-aliyun-publish.gradle"
 //开发版
-apply from: "snapshot-sonatype-publish.gradle"
+apply from: "snapshot-aliyun-publish.gradle"
 
 //config.gradle根目录变量全局
 def app = rootProject.ext.android

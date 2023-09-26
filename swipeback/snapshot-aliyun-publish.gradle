@@ -1,13 +1,13 @@
 apply plugin: 'maven-publish'
-apply plugin: 'signing'
 
 //仓库的用户名
 static def getRepositoryUsername() {
-    return "ZSAndroid"
+    return "64c322dd18dc444f20ffb4c9"
 }
+
 //仓库的密码
 static def getRepositoryPassword() {
-    return "gUIzHOUaNDROID199821!"
+    return "53]zpCwjDN-m"
 }
 
 if (project.hasProperty("android")) { // Android库
@@ -46,12 +46,6 @@ tasks.register('javadocJar', Jar) {
     from javadoc.destinationDir
 }
 
-//签名
-signing {
-    //required { gradle.taskGraph.hasTask("afterEvaluate") }
-    sign configurations.archives
-}
-
 //配置上传包的参数
 afterEvaluate {
     publishing {
@@ -59,7 +53,7 @@ afterEvaluate {
             //发布snapshot包
             mySnapshotPlugin(MavenPublication) {
                 groupId 'work.zsdev' //对应sonatype平台新建中的Group Id
-                artifactId 'mvp' //项目唯一标识符，对应项目名称
+                artifactId 'swipeback' //项目唯一标识符，对应项目名称
                 version '1.0.0-SNAPSHOT' //发布的版本 SNAPSHOT
                 //artifact(javadocJar)//将javadoc文档工件打包进aar
                 artifact(sourcesJar)//将Java注释工件打包进aar
@@ -80,53 +74,17 @@ afterEvaluate {
 //                        }
 //                    }
 //                }
-                //项目配置
-                pom {
-                    packaging 'aar' //安卓Library库：aar 、后端Java：jar
-                    name = 'mvp' // 发布库的简单名称
-                    description = 'AndroidMVP架构基类库' // 发布库的描述
-                    url = 'https://github.com/GuiZhouAndroid/LibraryProject' //Github项目首页
-                    //Git项目信息
-                    scm {
-                        //git项目连接地址
-                        connection = 'https://github.com/GuiZhouAndroid/LibraryProject.git'
-                        //git项目开发者连接地址
-                        developerConnection = 'https://github.com/GuiZhouAndroid/LibraryProject.git'
-                        //Github项目首页
-                        url = 'https://github.com/GuiZhouAndroid/LibraryProject.git'
-                    }
-                    // 开放许可证书
-                    licenses {
-                        license {
-                            //许可名称
-                            name = 'The Apache License, Version 2.0'
-                            //许可URL
-                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        }
-                    }
-                    //开发者SonaType账号的信息
-                    developers {
-                        developer {
-                            //全名
-                            id = 'ZhangSong'
-                            //用户名
-                            name = 'ZSAndroid'
-                            //邮箱
-                            email = '2393579405@qq.com'
-                        }
-                    }
-                }
             }
         }
     }
 }
 
-//配置上传SonaType仓库Maven地址和密码
+//配置上传阿里云效Maven仓库地址和密码
 publishing {
     repositories {
         //开发版
         maven {
-            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+            url 'https://packages.aliyun.com/maven/repository/2403080-snapshot-OqTT62/'
             credentials {
                 username = getRepositoryUsername()
                 password = getRepositoryPassword()
