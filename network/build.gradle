@@ -76,4 +76,8 @@ dependencies {
     implementation dpc["rxjava"]
     implementation dpc["rxandroid"]//Android项目使用rxjava3，通常会使用rxjava3的rxAndroid库,专注Android特性而设计
 
+    //AutoDispose：是一种RxJava工具，用于通过处置/取消将RxJava流的执行自动绑定到提供的作用域
+    implementation dpc["autodispose-android"]
+    implementation dpc["autodispose-androidx-lifecycle"]
+
 }

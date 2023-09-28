@@ -2,10 +2,13 @@ package zsdev.work.network.rxjava.transformer;
 
 import androidx.annotation.NonNull;
 
+import autodispose2.AutoDisposeConverter;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.FlowableSubscriber;
 import io.reactivex.rxjava3.core.FlowableTransformer;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableTransformer;
+import io.reactivex.rxjava3.core.Observer;
 import zsdev.work.network.base.BaseResponse;
 import zsdev.work.network.rxjava.function.FlowableErrorFunction;
 import zsdev.work.network.rxjava.function.ObservableErrorFunction;
@@ -29,7 +32,7 @@ public class HandlerTransformer {
      * @param <T> 调用者传递到方法上游的对象数据
      * @return Observable转换器
      */
-    public static <T> ObservableTransformer<BaseResponse<T>, T> getObservableTransformerScheduler() {
+    private static <T> ObservableTransformer<BaseResponse<T>, T> getObservableTransformerScheduler() {
         return new ObservableTransformer<BaseResponse<T>, T>() {
             @NonNull
             @Override
@@ -49,7 +52,7 @@ public class HandlerTransformer {
      *
      * @return Flowable转换器
      */
-    public static <T> FlowableTransformer<BaseResponse<T>, T> getFlowableTransformerScheduler() {
+    private static <T> FlowableTransformer<BaseResponse<T>, T> getFlowableTransformerScheduler() {
         //参数1：BaseResponse<T>为上游值（从model层调用传递过来的Bean），参数2：T为下游值（本次RxJava流程未结束，需要传递下一个流程中处理数据）
         return new FlowableTransformer<BaseResponse<T>, T>() {
             @NonNull
@@ -63,5 +66,43 @@ public class HandlerTransformer {
                         .compose(SchedulerTransformer.getFlowableScheduler());
             }
         };
+    }
+
+
+    /**
+     * Observable订阅封装，简化重复代码
+     *
+     * @param observable           Observable
+     * @param autoDisposeConverter AutoDisposeConverter绑定生命周期
+     * @param observer             自定义Observable订阅实现
+     * @param <T>                  返回请求实体数据
+     */
+    public static <T> void handlerSubscribe(Observable<BaseResponse<T>> observable, AutoDisposeConverter<T> autoDisposeConverter, Observer<T> observer) {
+        observable
+                //设置Observable线程调用及数据处理
+                .compose(getObservableTransformerScheduler())
+                //维护声明周期，解决内存泄漏
+                .to(autoDisposeConverter)
+                //传入自定义订阅Observable实现
+                .subscribe(observer);
+
+    }
+
+    /**
+     * Flowable订阅封装,简化重复代码
+     *
+     * @param flowable             Flowable
+     * @param autoDisposeConverter AutoDisposeConverter绑定生命周期
+     * @param flowableSubscriber   自定义Flowable订阅实现
+     * @param <T>                  返回请求实体数据
+     */
+    public static <T> void handlerSubscribe(Flowable<BaseResponse<T>> flowable, AutoDisposeConverter<T> autoDisposeConverter, FlowableSubscriber<T> flowableSubscriber) {
+        flowable
+                //设置Flowable线程调用及数据处理
+                .compose(getFlowableTransformerScheduler())
+                //维护声明周期，解决内存泄漏
+                .to(autoDisposeConverter)
+                //传入自定义Flowable订阅实现
+                .subscribe(flowableSubscriber);
     }
 }
