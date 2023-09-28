@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -72,7 +73,8 @@ public class NetworkLollipopAfterUtil {
 
     /**
      * >= Android 10（Q版本）推荐
-     * NetworkCapabilities.NET_CAPABILITY_INTERNET，表示此网络应该(maybe)能够访问internet
+     * NET_CAPABILITY_INTERNET：表示是否连接到互联网，即是否连接上了WIFI或者移动蜂窝网络，这个为TRUE不一定能正常上网
+     * NET_CAPABILITY_VALIDATED：表示是否确实能和连接的互联网通信，这个为TRUE，才是真的能上网
      * 判断当前网络可以正常上网
      * 表示此连接此网络并且能成功上网。  例如，对于具有NET_CAPABILITY_INTERNET的网络，这意味着已成功检测到INTERNET连接。
      */
@@ -89,6 +91,41 @@ public class NetworkLollipopAfterUtil {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
     }
 
+    /**
+     * 检测网络连接状态是否可用
+     *
+     * @return 连接状态是否可用
+     */
+    public static boolean isNetAvailable(Context context) {
+        if (context != null) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    NetworkInfo mWiFiNetworkInfo = cm.getActiveNetworkInfo();
+                    if (mWiFiNetworkInfo != null && mWiFiNetworkInfo.isConnected() && mWiFiNetworkInfo.isAvailable()) {
+                        if (mWiFiNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI) {//WIFI
+                            return true;
+                        } else if (mWiFiNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {//移动数据
+                            return true;
+                        }
+                    }
+                } else {
+                    Network network = cm.getActiveNetwork();
+                    if (network != null) {
+                        NetworkCapabilities nc = cm.getNetworkCapabilities(network);
+                        if (nc != null) {
+                            if (nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {//WIFI
+                                return true;
+                            } else if (nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {//移动数据
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * >= Android 10（Q版本）推荐

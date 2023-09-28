@@ -1,17 +1,19 @@
 package zsdev.work.utils.network.newnet;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.lifecycle.LiveData;
+
+import java.util.Objects;
 
 /**
  * Created: by 2023-09-25 13:04
@@ -19,19 +21,16 @@ import androidx.lifecycle.LiveData;
  * Author: 张松
  */
 
-public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
+@SuppressLint("NewApi")
+public class NetworkLiveData extends LiveData<NetworkState> {
     private static Context mContext;
-    private static NetworkLiveDataMAfter myNetworkLiveData;
+    private static NetworkLiveData myNetworkLiveData;
     private final ConnectivityManager manager;
-    private ConnectivityManager.NetworkCallback networkCallback;
-    private NetworkRequest networkRequest;
+    private final ConnectivityManager.NetworkCallback networkCallback;
 
-    public NetworkLiveDataMAfter(Context context) {
+    public NetworkLiveData(Context context) {
         mContext = context.getApplicationContext();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            networkCallback = new NetworkCallbackImpl();
-            networkRequest = new NetworkRequest.Builder().build();
-        }
+        networkCallback = new NetworkCallbackImpl();
         manager = (ConnectivityManager) mContext.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     }
 
@@ -40,10 +39,10 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
      *
      * @return MyNetworkLiveData 单例
      */
-    public static NetworkLiveDataMAfter getInstance(Context context) {
+    public static NetworkLiveData getInstance(Context context) {
         if (myNetworkLiveData == null) {
-            Log.i("NetworkLiveDataMAfter", "getInstance：sdk大于23");
-            myNetworkLiveData = new NetworkLiveDataMAfter(context);
+            Log.i("NetworkLiveData", "getInstance：sdk大于23");
+            myNetworkLiveData = new NetworkLiveData(context);
         }
         return myNetworkLiveData;
     }
@@ -56,8 +55,13 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
     @Override
     protected void onActive() {
         super.onActive();
-        manager.registerNetworkCallback(networkRequest, networkCallback);
-        Log.i("NetworkLiveDataMAfter", "onInactive：注册监听网络变化的广播");
+        manager.registerDefaultNetworkCallback(networkCallback);
+        Log.i("NetworkLiveData", "onInactive：注册监听网络变化的广播");
+        //在首次注册网络监听完成之后，判断有无网络，切换网络监听在NetworkCallback中的onCapabilitiesChanged()中判断
+        if (!NetworkLollipopAfterUtil.isNetAvailable(mContext)) {
+            getInstance(mContext).postValue(NetworkState.NOT_NETWORK_CHECK);
+            Log.i("NetworkLiveData", "onInactive：网络不可用，请检查网络！");
+        }
     }
 
     /**
@@ -69,10 +73,8 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
     @Override
     protected void onInactive() {
         super.onInactive();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            manager.unregisterNetworkCallback(networkCallback);
-        }
-        Log.i("NetworkLiveDataMAfter", "onInactive：注销广播");
+        manager.unregisterNetworkCallback(networkCallback);
+        Log.i("NetworkLiveData", "onInactive：注销网络监听广播");
     }
 
     /**
@@ -87,7 +89,7 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
      * 开着VPN切换网络只回调onCapabilitiesChanged的前提应该是切换后VPN并没有断开，如果断开了应该会回调onAvailable方法
      * 从一个wifi切换到另一个wifi，先回调onLost，然后onAvailable是移动网络，wifi连上后又回调一次onAvailable是wifi网络
      */
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
     private static class NetworkCallbackImpl extends ConnectivityManager.NetworkCallback {
 
         /**
@@ -104,8 +106,7 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
         @Override
         public void onAvailable(@NonNull Network network) {
             super.onAvailable(network);
-            Log.i("NetworkLiveDataMAfter: ", "onAvailable：sdk大于23==网络连接成功，通知可以使用的时候调用====onAvailable===");
-            getInstance(mContext).postValue(NetworkState.CONNECT);
+            Log.i("NetworkLiveData: ", "onAvailable：sdk大于23==网络连接成功，通知可以使用的时候调用====onAvailable===");
         }
 
         /**
@@ -113,8 +114,9 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
          */
         @Override
         public void onUnavailable() {
-            Log.i("NetworkLiveDataMAfter", "onUnavailable：sdk大于23==当网络连接超时或网络请求达不到可用要求时调用====onUnavailable===");
+            Log.i("NetworkLiveData", "onUnavailable：sdk大于23==当网络连接超时或网络请求达不到可用要求时调用====onUnavailable===");
             super.onUnavailable();
+            getInstance(mContext).postValue(NetworkState.NETWORK_CONNECT_Fail);
         }
 
         /**
@@ -125,7 +127,7 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
          */
         @Override
         public void onBlockedStatusChanged(@NonNull Network network, boolean blocked) {
-            Log.i("NetworkLiveDataMAfter", "onBlockedStatusChanged：sdk大于23==当访问指定的网络被阻止或解除阻塞时调用===onBlockedStatusChanged==");
+            Log.i("NetworkLiveData", "onBlockedStatusChanged：sdk大于23==当访问指定的网络被阻止或解除阻塞时调用===onBlockedStatusChanged==");
             super.onBlockedStatusChanged(network, blocked);
         }
 
@@ -137,7 +139,7 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
          */
         @Override
         public void onLosing(@NonNull Network network, int maxMsToLive) {
-            Log.i("NetworkLiveDataMAfter", "onLosing：sdk大于23==当网络正在断开连接时调用===onLosing===");
+            Log.i("NetworkLiveData", "onLosing：sdk大于23==当网络正在断开连接时调用===onLosing===");
             super.onLosing(network, maxMsToLive);
         }
 
@@ -148,9 +150,10 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
          */
         @Override
         public void onLost(@NonNull Network network) {
+            Log.i("NetworkLiveData：", "onLost：sdk大于23 当网络已断开连接时调用===onLost===");
             super.onLost(network);
-            getInstance(mContext).postValue(NetworkState.NONE);
-            Log.i("NetworkLiveDataMAfter：", "onLost：sdk大于23 当网络已断开连接时调用===onLost===");
+            getInstance(mContext).postValue(NetworkState.NOT_NETWORK_CHECK);
+
         }
 
         /**
@@ -172,31 +175,63 @@ public class NetworkLiveDataMAfter extends LiveData<NetworkState> {
          * @param network             当前活动的网络对象信息，网络切换后会变更为新的 Network 对象
          * @param networkCapabilities 当前网络对象属性对象
          */
-
         @Override
         public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
             super.onCapabilitiesChanged(network, networkCapabilities);
-            boolean isCurrentMobileNetwork = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
-            boolean isCurrentWifiNetwork = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
-            boolean isCurrentEthernet = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
-            boolean isValidated = false;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                isValidated = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
-            }
-            if (isValidated && isCurrentWifiNetwork) {
-                Log.i("NetworkLiveDataMAfter", "onCapabilitiesChanged：sdk大于23 wifi>>>>>>>>");
-                getInstance(mContext).postValue(NetworkState.WIFI);
-                return;
-            }
-            if (isValidated && isCurrentMobileNetwork) {
-                Log.i("NetworkLiveDataMAfter", "onCapabilitiesChanged：sdk大于23 蜂窝网络>>>>>>>>");
-                getInstance(mContext).postValue(NetworkState.CELLULAR);
-                return;
-            }
-            if (isValidated && isCurrentEthernet) {
-                Log.i("NetworkLiveDataMAfter", "onCapabilitiesChanged：sdk大于23 以太网>>>>>>>>");
-                getInstance(mContext).postValue(NetworkState.ETHERNET);
-                return;
+
+            //表明此网络连接验证成功
+            if (NetworkLollipopAfterUtil.isNetAvailable(mContext)) {
+                Log.i("NetworkLiveData", "onCapabilitiesChanged ---> ====网络可正常上网===网络类型为： " + NetworkLollipopAfterUtil.getConnectedNetworkType(mContext));
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    //通过网络连接管理器对象获取正在使用的网络信息
+                    NetworkInfo networkInfo = ((ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
+                    switch (Objects.requireNonNull(networkInfo).getType()) {
+                        case ConnectivityManager.TYPE_MOBILE:
+                            getInstance(mContext).postValue(NetworkState.MOBILE);
+                            Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk小于23 蜂窝网络>>>>>>>>");
+                            break;
+                        case ConnectivityManager.TYPE_WIFI:
+                            getInstance(mContext).postValue(NetworkState.WIFI);
+                            Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk小于23 wifi>>>>>>>>");
+                            break;
+                        default:
+                            getInstance(mContext).postValue(NetworkState.NOT_NETWORK_CHECK);
+                            break;
+                    }
+                } else {
+                    boolean isCurrentMobileNetwork = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
+                    boolean isCurrentWifiNetwork = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+                    boolean isCurrentBluetooth = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH);
+                    boolean isCurrentEthernet = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET);
+                    boolean isCurrentVPN = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
+                    boolean isCurrentWifiAware = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE);
+                    boolean isCurrentLowPan = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_LOWPAN);
+                    boolean isCurrentUSB = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_USB);
+
+                    if (isCurrentMobileNetwork) {
+                        getInstance(mContext).postValue(NetworkState.MOBILE);
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23===当前在使用Mobile流量上网===");
+                    } else if (isCurrentWifiNetwork) {
+                        getInstance(mContext).postValue(NetworkState.WIFI);
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23====当前在使用WiFi上网===");
+                    } else if (isCurrentBluetooth) {
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23=====当前使用蓝牙上网=====");
+                    } else if (isCurrentEthernet) {
+                        getInstance(mContext).postValue(NetworkState.ETHERNET);
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23=====当前使用以太网上网=====");
+                    } else if (isCurrentVPN) {
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23===当前使用VPN上网====");
+                    } else if (isCurrentWifiAware) {
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23===表示此网络使用Wi-Fi感知传输====");
+                    } else if (isCurrentLowPan) {
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23=====表示此网络使用LowPan传输=====");
+                    } else if (isCurrentUSB) {
+                        Log.i("NetworkLiveData", "onCapabilitiesChanged ---> sdk大于23=====表示此网络使用USB传输=====");
+                    }
+                }
+            } else {
+                getInstance(mContext).postValue(NetworkState.NOT_NETWORK_CHECK);
+                Log.i("NetworkLiveData", "onCapabilitiesChanged ---> 网络不可用，请检查网络！");
             }
         }
     }

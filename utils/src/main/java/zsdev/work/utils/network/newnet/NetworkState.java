@@ -8,11 +8,11 @@ import androidx.annotation.NonNull;
  * Author: 张松
  */
 public enum NetworkState {
-    NONE(0, "当前无网络连接"),
-    CONNECT(1, "当前网络连接正常"),
-    WIFI(2, "当前正在使用无线WIFI"),
-    CELLULAR(3, "当前正在使用移动数据流量"),
-    ETHERNET(4, "当前正在使用以太网");
+    NOT_NETWORK_CHECK(-1, "网络不可用，请检查网络！"),
+    NETWORK_CONNECT_Fail(-2, "网络连接超时，请稍候重试！"),
+    WIFI(1, "正在使用无线WIFI，不消耗数据流量哟~"),
+    MOBILE(2, "正在使用移动数据流量，请注意流量额度~"),
+    ETHERNET(3, "正在使用以太网~");
 
     private final int statusCode;
     private final String desc;

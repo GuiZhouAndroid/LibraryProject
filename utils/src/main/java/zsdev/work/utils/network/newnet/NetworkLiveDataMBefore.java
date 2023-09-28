@@ -58,7 +58,7 @@ public class NetworkLiveDataMBefore extends LiveData<NetworkState> {
     @Override
     protected void onInactive() {
         super.onInactive();
-        Log.i("NetworkLiveDataMBefore", "onInactive：注销广播");
+        Log.i("NetworkLiveDataMBefore", "onInactive：注销网络监听广播");
         mContext.unregisterReceiver(mNetworkReceiver);
     }
 
@@ -71,23 +71,21 @@ public class NetworkLiveDataMBefore extends LiveData<NetworkState> {
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
             //网络连接成功执行
             if (networkInfo != null && networkInfo.isConnected() && networkInfo.isAvailable()) {
-
                 switch (networkInfo.getType()) {
                     case ConnectivityManager.TYPE_MOBILE:
-                        getInstance(context).postValue(NetworkState.CELLULAR);
+                        getInstance(context).postValue(NetworkState.MOBILE);
                         Log.i("NetworkLiveDataMBefore", "onReceive：sdk小于23 蜂窝网络>>>>>>>>");
                         break;
                     case ConnectivityManager.TYPE_WIFI:
                         getInstance(context).postValue(NetworkState.WIFI);
                         Log.i("NetworkLiveDataMBefore", "onReceive：sdk小于23 wifi>>>>>>>>");
                         break;
-                    case ConnectivityManager.TYPE_ETHERNET:
-                        getInstance(context).postValue(NetworkState.ETHERNET);
-                        Log.i("NetworkLiveDataMBefore", "onReceive：sdk小于23 以太网>>>>>>>>");
+                    default:
+                        getInstance(context).postValue(NetworkState.NOT_NETWORK_CHECK);
                         break;
                 }
-            } else { //网络连接失败执行
-                getInstance(context).postValue(NetworkState.NONE);
+            } else {
+                getInstance(context).postValue(NetworkState.NOT_NETWORK_CHECK);
                 Log.i("NetworkLiveDataMBefore", "onReceive：sdk小于23 网络断开>>>>>>>>");
             }
         }
