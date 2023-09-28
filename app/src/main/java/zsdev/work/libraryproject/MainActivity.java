@@ -21,6 +21,11 @@ public class MainActivity extends BaseMvpActivity<MainPresenter, ActivityMainBin
 
 
     @Override
+    public boolean initNetworkStateListener() {
+        return true;
+    }
+
+    @Override
     public void onSuccessNetUI(String successData) {
         showSuccessDialog(successData);
     }

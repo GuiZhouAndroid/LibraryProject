@@ -61,22 +61,18 @@ public class MainPresenter extends BasePresenter<MainContract.View, MainContract
 //
 //            }
 //        });
-//
-        mainModel.login2()
-                .compose(HandlerTransformer.getFlowableTransformerScheduler())
-                .to(bindLifecycle()).subscribe(new BaseFlowableSubscriber<My>(App.getContext(), BaseActivity.getNowActivity(),9) {
-                    @Override
-                    public void onFail(ResponseThrowable responseThrowable) {
-                        nowView.loginFailure(responseThrowable.getMessage());
-                    }
+        HandlerTransformer.handlerSubscribe(mainModel.login2(), bindLifecycle(), new BaseFlowableSubscriber<My>(App.getContext(), BaseActivity.getNowActivity(), 9) {
+            @Override
+            public void onFail(ResponseThrowable responseThrowable) {
+                nowView.loginFailure(responseThrowable.getMessage());
+            }
 
-                    @Override
-                    public void onSuccess(My my) {
-                        // nowView.loginSuccess(my);
-                        nowView.onSuccessNetUI(my.getName());
-                    }
-                });
-
+            @Override
+            public void onSuccess(My my) {
+                // nowView.loginSuccess(my);
+                nowView.onSuccessNetUI(my.getName());
+            }
+        });
     }
 }
 

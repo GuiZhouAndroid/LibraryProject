@@ -7,6 +7,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import zsdev.work.mvp.base.BaseActivity;
+import zsdev.work.utils.network.newnet.NetworkState;
 
 /**
  * Created: by 2023-09-26 17:30
@@ -14,6 +15,8 @@ import zsdev.work.mvp.base.BaseActivity;
  * Author: 张松
  */
 public class HomeActivity extends BaseActivity {
+
+
     @Override
     public int viewByResIdBindLayout() {
         return R.layout.activity_home;
