@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -28,6 +29,8 @@ import zsdev.work.swipeback.SwipeBackActivity;
 import zsdev.work.swipeback.SwipeBackLayout;
 import zsdev.work.utils.ActivityManagerUtil;
 import zsdev.work.utils.ImmersiveUtil;
+import zsdev.work.utils.network.newnet.NetworkLiveDataMBefore;
+import zsdev.work.utils.network.newnet.NetworkState;
 
 /**
  * Created: by 2023-09-20 12:48
@@ -70,6 +73,20 @@ public abstract class BaseActivity extends SwipeBackActivity implements IActivit
      * 自定义对话框
      */
     protected DialogHelper mActivityDialogHelper;
+
+    /**
+     * 设置网络状态监听
+     *
+     * @param isOpen true：开启网络监听 false：禁用网络监听
+     */
+    private void setNetworkStateListener(boolean isOpen) {
+        if (isOpen) {
+            // TODO: 2023/9/28  此处使用旧版网络监听，待使用新版网络监听，待修复其重复调用onCapabilitiesChanged()多次出现Toast提示
+            NetworkLiveDataMBefore.getInstance(getNowActivityContext()).observe(this, this::getNetworkState);
+        } else {
+            Log.i(TAG, "setNetworkStateListener: 禁用网络监听");
+        }
+    }
 
     /**
      * 设置滑动返回
@@ -166,6 +183,7 @@ public abstract class BaseActivity extends SwipeBackActivity implements IActivit
         //Activity的管理，将Activity压入栈
         activityManagerUtil = ActivityManagerUtil.getScreenManager();
         activityManagerUtil.pushActivity(this);
+        setNetworkStateListener(initNetworkStateListener());//设置网络状态监听
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT); //强制竖屏
         setSwipeBackLayout(initSwipeBackLayout());//设置滑动返回
         setImmersiveStatusBar(initImmersiveStatusBar());//设置沉浸式状态栏
@@ -317,6 +335,31 @@ public abstract class BaseActivity extends SwipeBackActivity implements IActivit
     public void onDialogCancelListener(AlertDialog dialog) {
         if (mActivityDialogHelper != null) {
             mActivityDialogHelper.dismissDialog();
+        }
+    }
+
+    /**
+     * 获取状态并在界面显示、
+     *
+     * @param networkState 网络状态
+     */
+    private void getNetworkState(NetworkState networkState) {
+        switch (networkState) {
+            case NOT_NETWORK_CHECK:
+                Toast.makeText(getNowActivity(), NetworkState.NOT_NETWORK_CHECK.getDesc(), Toast.LENGTH_SHORT).show();
+                break;
+            case NETWORK_CONNECT_Fail:
+                Toast.makeText(getNowActivity(), NetworkState.NETWORK_CONNECT_Fail.getDesc(), Toast.LENGTH_SHORT).show();
+                break;
+            case WIFI:
+                Toast.makeText(getNowActivity(), NetworkState.WIFI.getDesc(), Toast.LENGTH_SHORT).show();
+                break;
+            case MOBILE:
+                Toast.makeText(getNowActivity(), NetworkState.MOBILE.getDesc(), Toast.LENGTH_SHORT).show();
+                break;
+            case ETHERNET:
+                Toast.makeText(getNowActivity(), NetworkState.ETHERNET.getDesc(), Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 }

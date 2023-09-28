@@ -6,6 +6,16 @@ package zsdev.work.mvp;
  * Author: 张松
  */
 public interface IActivityInitUI {
+
+    /**
+     * 初始化网络监听，默认禁用
+     *
+     * @return true：开启网络监听 false：禁用网络监听
+     */
+    default boolean initNetworkStateListener() {
+        return false;
+    }
+
     /**
      * 初始化滑动返回
      *
