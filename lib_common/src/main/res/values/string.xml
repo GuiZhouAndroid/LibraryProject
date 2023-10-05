@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="module_app_name">壳工程</string>
+    <string name="module_main_name">主页</string>
+    <string name="module_oneself_name">我的</string>
+    <string name="module_pay_name">支付</string>
+</resources>
