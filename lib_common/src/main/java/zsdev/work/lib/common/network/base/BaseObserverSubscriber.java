@@ -2,6 +2,7 @@ package zsdev.work.lib.common.network.base;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
@@ -10,10 +11,9 @@ import io.reactivex.rxjava3.observers.ResourceObserver;
 import zsdev.work.lib.common.network.INetworkHandler;
 import zsdev.work.lib.common.network.exception.NetworkError;
 import zsdev.work.lib.common.network.exception.ResponseThrowable;
-import zsdev.work.lib.common.utils.network.NetworkUtil;
+import zsdev.work.lib.common.utils.network.newnet.NetworkLollipopAfterUtil;
 import zsdev.work.lib.common.widget.dialog.normal.DialogHelper;
 import zsdev.work.lib.common.widget.dialog.normal.OnDialogCancelListener;
-
 
 /**
  * Created: by 2023-09-12 00:40
@@ -63,10 +63,12 @@ public abstract class BaseObserverSubscriber<T> extends ResourceObserver<T> impl
     protected void onStart() {
         super.onStart();
         Log.i("BaseObserverSubscriber", "onStart():显示进度条");
-        if (!NetworkUtil.isAvailable(context)) {
-            Log.i("BaseObserverSubscriber", "onStart():当前网络不可用，请检查网络情况");
-            // 一定好主动调用下面这一句
-            onComplete();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!NetworkLollipopAfterUtil.isNetAvailable(context)) {
+                Log.i("BaseObserverSubscriber", "onStart():当前网络不可用，请检查网络情况");
+                // 一定好主动调用下面这一句
+                onComplete();
+            }
         }
         //创建自定义对话框
         if (mDialogHelper == null) {

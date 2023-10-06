@@ -15,22 +15,20 @@ public class NetworkError {
     /**
      * 解析错误
      */
-    public static final int PARSE_ERROR = 1009;
+    public static final int PARSE_ERROR = 1001;
 
     /**
-     * 网络错误
+     * 连接失败
      */
     public static final int NETWORK_ERROR = 1002;
 
     /**
-     * 协议出错
+     * 网络错误
      */
     public static final int HTTP_ERROR = 1003;
 
-
     /**
-     * 证书出错
+     * 安全证书验证失败
      */
-    public static final int SSL_ERROR = 1005;
-    public static final int SSL_QWE = 1001;
+    public static final int SSL_ERROR = 1004;
 }

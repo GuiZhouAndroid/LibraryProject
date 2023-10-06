@@ -38,3 +38,4 @@ include ':swipeback'
 include ':utils'
 include ':lib_common'
 
+include ':common_app'

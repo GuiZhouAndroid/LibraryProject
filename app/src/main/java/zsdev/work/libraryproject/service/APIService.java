@@ -29,7 +29,7 @@ public interface APIService extends BaseApiService {
     @POST("user/login")
     Observable<LoginBean> login(@Field("username") String username, @Field("password") String password);
 
-    @POST("success")
+    @POST("network/error")
     Flowable<BaseResponse<My>> login2();
 
 }

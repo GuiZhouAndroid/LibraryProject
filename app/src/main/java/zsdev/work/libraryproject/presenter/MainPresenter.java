@@ -1,8 +1,5 @@
 package zsdev.work.libraryproject.presenter;
 
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.rxjava3.subscribers.DisposableSubscriber;
 import zsdev.work.libraryproject.App;
 import zsdev.work.libraryproject.bean.My;
 import zsdev.work.libraryproject.contract.MainContract;
@@ -12,7 +9,7 @@ import zsdev.work.mvp.base.BasePresenter;
 import zsdev.work.network.base.BaseFlowableSubscriber;
 import zsdev.work.network.exception.ResponseThrowable;
 import zsdev.work.network.rxjava.transformer.HandlerTransformer;
-import zsdev.work.network.rxjava.transformer.SchedulerTransformer;
+
 
 /**
  * Created: by 2023-09-26 18:31
@@ -62,9 +59,10 @@ public class MainPresenter extends BasePresenter<MainContract.View, MainContract
 //            }
 //        });
         HandlerTransformer.handlerSubscribe(mainModel.login2(), bindLifecycle(), new BaseFlowableSubscriber<My>(App.getContext(), BaseActivity.getNowActivity(), 9) {
+
             @Override
             public void onFail(ResponseThrowable responseThrowable) {
-                nowView.loginFailure(responseThrowable.getMessage());
+                nowView.loginFailure(responseThrowable.getCode() + ":" + responseThrowable.getMsg());
             }
 
             @Override

@@ -1,11 +1,13 @@
 package zsdev.work.network.exception;
 
+import androidx.annotation.NonNull;
+
 /**
  * Created: by 2023-09-09 01:24
  * Description: 响应异常
  * Author: 张松
  */
-public class ResponseThrowable extends RuntimeException {
+public class ResponseThrowable extends Exception {
 
     /**
      * 异常码
@@ -22,16 +24,29 @@ public class ResponseThrowable extends RuntimeException {
         this.code = code;
     }
 
-    /**
-     * RxJava装载异常创建对象后，在Subscriber订阅基类中的onError()方法中匹配异常约定常量后返回
-     *
-     * @param throwable 异常
-     * @param code      异常码
-     */
-    public ResponseThrowable(Throwable throwable, int code, String msg) {
-        super(throwable);
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
         this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
         this.msg = msg;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ResponseThrowable{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                '}';
     }
 }
 

@@ -16,4 +16,17 @@ public class ServerException extends RuntimeException {
      * 异常原因
      */
     public String msg;
+
+    public ServerException(int code, String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
 }

@@ -3,13 +3,14 @@ package zsdev.work.lib.common.network.base;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import io.reactivex.rxjava3.subscribers.ResourceSubscriber;
 import zsdev.work.lib.common.network.INetworkHandler;
 import zsdev.work.lib.common.network.exception.NetworkError;
 import zsdev.work.lib.common.network.exception.ResponseThrowable;
-import zsdev.work.lib.common.utils.network.NetworkUtil;
+import zsdev.work.lib.common.utils.network.newnet.NetworkLollipopAfterUtil;
 import zsdev.work.lib.common.widget.dialog.custom.DialogUserCustomView;
 
 
@@ -71,10 +72,12 @@ public abstract class BaseFlowableSubscriber<T> extends ResourceSubscriber<T> im
     protected void onStart() {
         super.onStart();
         Log.i("BaseFlowableSubscriber", "onStart():显示进度条");
-        if (!NetworkUtil.isAvailable(context)) {
-            Log.i("BaseFlowableSubscriber", "onStart():当前网络不可用，请检查网络情况");
-            // 一定好主动调用下面这一句
-            onComplete();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!NetworkLollipopAfterUtil.isNetAvailable(context)) {
+                Log.i("BaseFlowableSubscriber", "onStart():当前网络不可用，请检查网络情况");
+                // 一定好主动调用下面这一句
+                onComplete();
+            }
         }
         //显示等待框
         if (dialog != null) {
@@ -91,11 +94,11 @@ public abstract class BaseFlowableSubscriber<T> extends ResourceSubscriber<T> im
     public void onError(Throwable throwable) {
         if (throwable instanceof ResponseThrowable) {
             onFail((ResponseThrowable) throwable);
-//            onFail(new ResponseThrowable(throwable, NetworkError.UNKNOWN));
-            Log.i("BaseFlowableSubscriber", "ResponseThrowable():" + throwable.toString());
+            Log.i("BaseFlowableSubscriber", "onError()错误码:" + ((ResponseThrowable) throwable).getCode());
+            Log.i("BaseFlowableSubscriber", "onError()错误原因:" + ((ResponseThrowable) throwable).getMsg());
         } else {
             onFail(new ResponseThrowable(throwable, NetworkError.UNKNOWN));
-            Log.i("BaseFlowableSubscriber", "ResponseThrowable():其他错误");
+            Log.i("BaseFlowableSubscriber", "onError():其他错误");
         }
         //关闭等待框
         if (dialog != null) {
