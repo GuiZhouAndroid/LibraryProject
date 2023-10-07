@@ -30,12 +30,8 @@ dependencyResolutionManagement {
 //指定工程根目录，声明后会自动执行该构建脚本
 rootProject.name = "LibraryProject"
 //指定子项目，声明后会自动执行该构建脚本，例如module名
-include ':app'
 include ':mvp'
 include ':dialog'
 include ':network'
 include ':swipeback'
 include ':utils'
-include ':lib_common'
-
-include ':common_app'
